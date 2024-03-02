@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "audiokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/AudioKit.git",
+      "state" : {
+        "revision" : "b2dbaed8cd38077092b6b6e311699ddf5d94dbd7",
+        "version" : "5.6.3"
+      }
+    },
+    {
+      "identity" : "audiokitex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/AudioKitEX.git",
+      "state" : {
+        "revision" : "58fa4a002028a2addf96466dd5ad68182e7d387e",
+        "version" : "5.6.0"
+      }
+    },
+    {
+      "identity" : "kissfft",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/KissFFT",
+      "state" : {
+        "revision" : "dd0636e151724b8ba2e0908eba4d99a6ff24d00c",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "soundpipeaudiokit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AudioKit/SoundpipeAudioKit.git",
+      "state" : {
+        "revision" : "ee7d9542078ae48b24744a67c0350a12f9de354b",
+        "version" : "5.6.1"
+      }
+    }
+  ],
+  "version" : 2
+}
