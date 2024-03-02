@@ -13,7 +13,6 @@ public struct TunerView: View {
     }
     
     @State var tuner: TunerConductor
-    @State var showAlert: Bool = false
     
     var isInTune: Bool {
         return abs(tuner.data.deviation) <= 5
@@ -79,12 +78,6 @@ public struct TunerView: View {
         }
         .onDisappear {
             tuner.stop()
-        }
-        .alert("Contact Developer?", isPresented: $showAlert) {
-            Button("Open Email") {
-                // TODO: open email
-            }
-            Button("Cancel", role: .cancel, action: {})
         }
         .alert("Error", isPresented: showErrorAlert) {
             Button("OK", action: {})
