@@ -1,33 +1,19 @@
-//
-//  TunerView.swift
-//  SpatialTuner
-//
-//  Created by Matt Pfeiffer on 2/27/24.
-//
-
 import SwiftUI
 
-public struct TunerView: View {
-    public init(tuner: TunerConductor = TunerConductor()) {
+public struct TunerMainView: View {
+    public init(tuner: TunerConductor = TunerConductor(), isStartingUp: Bool = false) {
         self.tuner = tuner
+        self.isStartingUp = isStartingUp
     }
     
     @State var tuner: TunerConductor
+    let isStartingUp: Bool
     
     var isInTune: Bool {
         return abs(tuner.data.deviation) <= 5
     }
     
     public var body: some View {
-        let showErrorAlert = Binding<Bool>(
-            get: { tuner.errorMessage != nil },
-            set: { newValue in
-                if !newValue {
-                    tuner.errorMessage = nil
-                }
-            }
-        )
-        
         ZStack(alignment: .center) {
             DeviationLabelHeader(deviation: tuner.data.deviation)
                 .padding()
@@ -37,53 +23,32 @@ public struct TunerView: View {
                     .font(Font.system(size: 72))
                     .bold()
                     .overlay (
-                        Group {
-                            HStack {
+                        HStack {
+                            if let octave = tuner.data.octaveNumber {
                                 Spacer()
-                                if let octave = tuner.data.octaveNumber {
-                                    Text("\(octave)")
-                                        .font(.body)
-                                }
+                                Text("\(octave)")
+                                    .font(.body)
                             }
-                            .offset(x: 18, y: 24)
                         }
+                        .offset(x: 18, y: 24)
                     )
             } else {
-                Text("Tap Mic to start")
+                if isStartingUp {
+                    ProgressView()
+                } else {
+                    Text("Tap Mic to start")
+                }
             }
             
             TunerMetricsViewHeader(pitch: tuner.data.pitch,
                                    deviation: tuner.data.deviation)
-                .padding()
+            .padding()
             
-            DeviationIndicator(deviation: tuner.data.deviation)
+            DeviationIndicator(deviation: tuner.data.deviation, bufferSize: tuner.bufferSize)
             
             InTuneIndicator(isInTune: isInTune)
         }
         .padding()
-        .frame(minWidth: 300, maxWidth: 300, minHeight: 300, maxHeight: 300)
-        .ornament(attachmentAnchor: .scene(.topLeading), contentAlignment: .topTrailing) {
-            Button("Mic", systemImage: !tuner.engineIsRunning ? "mic.fill" : "mic.slash") {
-                if tuner.engineIsRunning {
-                    tuner.stop()
-                } else {
-                    tuner.start()
-                }
-            }
-            .labelStyle(.iconOnly)
-            .padding(.bottom)
-        }
-        .onAppear {
-            tuner.start()
-        }
-        .onDisappear {
-            tuner.stop()
-        }
-        .alert("Error", isPresented: showErrorAlert) {
-            Button("OK", action: {})
-        } message: {
-            Text(tuner.errorMessage ?? "Something went wrong")
-        }
     }
     
     struct InTuneIndicator: View {
@@ -159,15 +124,16 @@ public struct TunerView: View {
     
     struct DeviationIndicator: View {
         let deviation: Float
+        let bufferSize: BufferSize
         
         var body: some View {
             ZStack {
                 // background tracks
-                DeviationIndicatorArc(deviation: 50.0).opacity(0.25)
-                DeviationIndicatorArc(deviation: -50.0).opacity(0.25)
+                DeviationIndicatorArc(deviation: 50.0, bufferSize: bufferSize).opacity(0.25)
+                DeviationIndicatorArc(deviation: -50.0, bufferSize: bufferSize).opacity(0.25)
                 
                 // dynamic arc
-                DeviationIndicatorArc(deviation: deviation)
+                DeviationIndicatorArc(deviation: deviation, bufferSize: bufferSize)
             }
         }
     }
@@ -186,15 +152,18 @@ public struct TunerView: View {
     
     struct DeviationIndicatorArc: View {
         let deviation: Float
+        let bufferSize: BufferSize
         
         var body: some View {
             ArcShape(deviation: Double(deviation))
-            .stroke(LinearGradient(gradient: Gradient(colors: [.red, .yellow, .green]),
+            .stroke(
+                LinearGradient(gradient: Gradient(colors: [.red, .yellow, .green]),
                                    startPoint: UnitPoint(x: 0.5, y: 0.5),
                                    endPoint: UnitPoint(x: 1.0, y: 0.5)),
-                    style: .init(lineWidth: 25, lineCap: .round))
+                    style: .init(lineWidth: 25, lineCap: .round)
+            )
                         .frame(width: 200, height: 200)
-                        .animation(.easeInOut(duration: 0.0213), value: deviation)
+                        .animation(.easeInOut(duration: bufferSize.animationDuration), value: deviation)
                         .rotationEffect(.degrees(-90))
                         
         }
@@ -235,7 +204,9 @@ public struct TunerView: View {
     }
 }
 
-#Preview(windowStyle: .automatic,
+#Preview("Main", windowStyle: .automatic,
          traits: .fixedLayout(width: 300, height: 300)) {
-    TunerView(tuner: TunerConductor(isMockingInput: true))
+    var conductor = TunerConductor(isMockingInput: true)
+    conductor.start()
+    return TunerMainView(tuner: conductor)
 }

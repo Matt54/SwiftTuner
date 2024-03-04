@@ -4,77 +4,98 @@ import AVFoundation
 import SoundpipeAudioKit
 import SwiftUI
 
+// MARK: Properties and Initializer
 @Observable
 public class TunerConductor {
     public var data = TunerData()
+    public var amplitudeThreshold: Float = 0.025
     public var engineIsRunning: Bool = false
     public var errorMessage: String? = nil
+
+    public var bufferSize: BufferSize = .oneThousandAndTwentyFour  {
+        didSet { updateTrackerBufferSize(bufferSize) }
+    }
     
     // set this to your logger / analytics capturing class
     public var Logger: LogsEvents.Type?
-    
+
+    private var engine: AudioEngine?
+    private var wasRunningWhenAudioInterrupted: Bool = false
+    private var tracker: PitchTap?
+    private var mockDataGenerator: MockTunerDataGenerator? // For SwiftUI Previews
+    private let noteFrequencies = TunerPitch.allCases.map({ $0.noteFrequency })
+    private let noteNames = TunerPitch.allCases.map({ $0.noteNameSharp })
+
     public init(isMockingInput: Bool = false, Logger: LogsEvents.Type? = nil) {
         self.Logger = Logger
-        engine = AudioEngine()
-        if let input = engine.input, !isMockingInput {
-            setupAudioChain(input: input)
+        if !isMockingInput {
+            setupAudioChain()
             configureAudioSession()
         } else {
             setupMockDataGenerator()
         }
     }
-    
-    public func start() {
+}
+
+// MARK: Public Methods
+public extension TunerConductor {
+    func start(shouldSetErrorMessage: Bool = true) {
         if let mockDataGenerator {
             mockDataGenerator.startGenerating()
             engineIsRunning = true
         } else {
             do {
-                try engine.start()
+                try engine?.start()
                 tracker?.start()
                 engineIsRunning = true
             } catch {
                 Logger?.log(TunerEvent.audioEngineStart.rawValue, additionalContext: ["error": String(describing: error)])
-                errorMessage = error.localizedDescription
+                if shouldSetErrorMessage {
+                    errorMessage = error.localizedDescription
+                }
                 engineIsRunning = false
                 tracker?.stop()
             }
         }
     }
     
-    public func stop() {
+    func stop() {
         if let mockDataGenerator {
             mockDataGenerator.stopGenerating()
         } else {
             tracker?.stop()
-            engine.stop()
+            engine?.stop()
         }
         engineIsRunning = false
         data = TunerData()
     }
-    
-    private var engine: AudioEngine
-    private var wasRunningWhenAudioInterrupted: Bool = false
-    private var tracker: PitchTap?
-    private var mockDataGenerator: MockTunerDataGenerator?
-    private let noteFrequencies = TunerPitch.allCases.map({ $0.noteFrequency })
-    private let noteNames = TunerPitch.allCases.map({ $0.noteNameSharp })
-    
-    private func setupAudioChain(input: AudioEngine.InputNode) {
+}
+
+// MARK: Private Methods
+extension TunerConductor {
+    private func setupAudioChain() {
+        engine = AudioEngine()
+        
+        guard let input = engine?.input else {
+            Logger?.log(TunerEvent.audioEngineInputNodeMissing.rawValue, additionalContext: nil)
+            errorMessage = "Audio input not found"
+            return
+        }
+        
         // change buffer size to increase or decrease refresh rate of tracker
-        tracker = PitchTap(input, bufferSize: 1024) { pitch, amp in
-            self.update(pitch[0], amp[0])
+        tracker = PitchTap(input, bufferSize: bufferSize.rawValue) { pitch, amp in
+            self.updatePitch(pitch[0], amp[0])
         }
 
         // gain of zero to prevent feedback
         let fader = Fader(input, gain: 0)
         
-        engine.output = fader
+        engine?.output = fader
     }
     
     private func setupMockDataGenerator() {
         let mockDataGenerator = MockTunerDataGenerator()
-        mockDataGenerator.onUpdate = update
+        mockDataGenerator.onUpdate = updatePitch
         self.mockDataGenerator = mockDataGenerator
     }
     
@@ -95,8 +116,19 @@ public class TunerConductor {
                                                object: audioSession)
     }
     
-    private func update(_ pitch: AUValue, _ amp: AUValue) {
-        guard amp > 0.025 else { return }
+    private func updateTrackerBufferSize(_ bufferSize: BufferSize) {
+        if let input = engine?.input, tracker != nil {
+            tracker = PitchTap(input, bufferSize: bufferSize.rawValue) { pitch, amp in
+                self.updatePitch(pitch[0], amp[0])
+            }
+            if engineIsRunning {
+                tracker?.start()
+            }
+        }
+    }
+    
+    private func updatePitch(_ pitch: AUValue, _ amp: AUValue) {
+        guard amp > amplitudeThreshold else { return }
 
         var frequency = pitch
         while frequency > Float(noteFrequencies[noteFrequencies.count - 1]) {
@@ -121,7 +153,7 @@ public class TunerConductor {
         var targetFrequency = noteFrequencies[index] * pow(2.0, Double(octave))
         var deviation = 1200 * log2(pitch / Float(targetFrequency))
 
-        // Check if the deviation is significantly high and adjust the note, octave, and deviation accordingly
+        // Check if the deviation is out of range and adjust the note, octave, and deviation accordingly
         if deviation > 50 {
             index = (index + 1) % noteFrequencies.count
             if index == 0 {
@@ -176,12 +208,4 @@ public class TunerConductor {
             }
         }
     }
-}
-
-enum TunerEvent: String {
-    case audioEngineStart = "Audio Engine Start",
-         setAudioSessionCategory = "Set Audio Session Cateogry",
-         audioEngineInterruption = "Audio Engine Interruption",
-         audioEngineInterruptionUnknown = "Audio Engine Interruption Unknown",
-         audioSessionSetActiveFailed = "Audio Session Set Active Failed"
 }
