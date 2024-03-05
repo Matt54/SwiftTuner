@@ -13,4 +13,8 @@ public enum BufferSize: UInt32, CaseIterable, Identifiable {
     }
     
     public var id: UInt32 { self.rawValue }
+    
+    static var defaultValue: BufferSize {
+        .oneThousandAndTwentyFour
+    }
 }

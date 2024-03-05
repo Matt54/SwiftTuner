@@ -8,11 +8,11 @@ import SwiftUI
 @Observable
 public class TunerConductor {
     public var data = TunerData()
-    public var amplitudeThreshold: Float = 0.025
+    public var amplitudeThreshold: Float = UserDefaultsManager.getAmplitudeThreshold()
     public var engineIsRunning: Bool = false
     public var errorMessage: String? = nil
 
-    public var bufferSize: BufferSize = .oneThousandAndTwentyFour  {
+    public var bufferSize: BufferSize = UserDefaultsManager.getBufferSize()  {
         didSet { updateTrackerBufferSize(bufferSize) }
     }
     
@@ -128,6 +128,7 @@ extension TunerConductor {
             }
             Logger?.log(TunerEvent.bufferSizeUpdated.rawValue, additionalContext: ["buffer_size": bufferSize])
         }
+        UserDefaultsManager.setBufferSize(bufferSize)
     }
     
     private func updatePitch(_ pitch: AUValue, _ amp: AUValue) {

@@ -44,7 +44,12 @@ struct TunerSettingsView: View {
                 Text("Amp. Threshold: \(tuner.amplitudeThreshold, specifier: "%0.3f")")
             }
             .padding(.bottom, 10)
-            Slider(value: $tuner.amplitudeThreshold, in: 0.01...0.1)
+            
+            Slider(value: $tuner.amplitudeThreshold, in: 0.01...0.1) { isEditing in
+                if !isEditing {
+                    UserDefaultsManager.setAmplitudeThreshold(tuner.amplitudeThreshold)
+                }
+            }
             
             Spacer()
                 
