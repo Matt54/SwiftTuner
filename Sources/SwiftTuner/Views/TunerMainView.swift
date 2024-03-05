@@ -147,6 +147,7 @@ public struct TunerMainView: View {
                 .foregroundStyle(isHighlighted ? .secondary : .tertiary)
                 .font(Font.system(size: isHighlighted ? 32 : 28))
                 .frame(width: 20, height: 40)
+                .animation(.easeInOut(duration: 0.1), value: isHighlighted)
         }
     }
     

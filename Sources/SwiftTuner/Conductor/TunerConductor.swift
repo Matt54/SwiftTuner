@@ -48,13 +48,14 @@ public extension TunerConductor {
                 try engine?.start()
                 tracker?.start()
                 engineIsRunning = true
+                Logger?.log(TunerEvent.audioEngineStarted.rawValue, additionalContext: nil)
             } catch {
-                Logger?.log(TunerEvent.audioEngineStart.rawValue, additionalContext: ["error": String(describing: error)])
                 if shouldSetErrorMessage {
                     errorMessage = error.localizedDescription
                 }
                 engineIsRunning = false
                 tracker?.stop()
+                Logger?.log(TunerEvent.audioEngineStartError.rawValue, additionalContext: ["error": String(describing: error)])
             }
         }
     }
@@ -65,6 +66,7 @@ public extension TunerConductor {
         } else {
             tracker?.stop()
             engine?.stop()
+            Logger?.log(TunerEvent.audioEngineStopped.rawValue, additionalContext: nil)
         }
         engineIsRunning = false
         data = TunerData()
@@ -107,7 +109,7 @@ extension TunerConductor {
                                          options: [.mixWithOthers, .allowBluetooth, .defaultToSpeaker])
             try audioSession.setActive(true)
         } catch {
-            Logger?.log(TunerEvent.setAudioSessionCategory.rawValue, additionalContext: ["error": String(describing: error)])
+            Logger?.log(TunerEvent.setAudioSessionCategoryError.rawValue, additionalContext: ["error": String(describing: error)])
             errorMessage = error.localizedDescription
         }
         
@@ -124,6 +126,7 @@ extension TunerConductor {
             if engineIsRunning {
                 tracker?.start()
             }
+            Logger?.log(TunerEvent.bufferSizeUpdated.rawValue, additionalContext: ["buffer_size": bufferSize])
         }
     }
     
