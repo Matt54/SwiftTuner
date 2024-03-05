@@ -28,7 +28,7 @@ public struct TunerRootView: View {
         }
         .ornament(attachmentAnchor: .scene(.topLeading), contentAlignment: .topTrailing) {
             VStack {
-                Button("Mic", systemImage: isSettingsShowing ? "gearshape.fill" : "gearshape") {
+                Button("Mic", systemImage: isSettingsShowing ? "tuningfork" : "gearshape.fill") {
                     isSettingsShowing.toggle()
                 }
                 .labelStyle(.iconOnly)

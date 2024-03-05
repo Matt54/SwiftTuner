@@ -88,11 +88,11 @@ struct TunerSettingsView: View {
 
 extension String {
     static var bufferSizeInfo: String {
-        "Influences how often the pitch is updated. You can think of it as setting the length of time which will be analyzed for each update."
+        "The number of samples which will be analyzed for each update. This influences how often the pitch is read."
     }
     
     static var amplitudeThresholdInfo: String {
-        "Minimum loudness for a reading to be considered. Every analysis window read to be below this value is considered silence and ignored."
+        "Minimum loudness for a reading to be considered. Every buffer with an amplitude below this value is ignored."
     }
 }
 

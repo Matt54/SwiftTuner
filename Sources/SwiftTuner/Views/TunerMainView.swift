@@ -207,7 +207,7 @@ public struct TunerMainView: View {
 
 #Preview("Main", windowStyle: .automatic,
          traits: .fixedLayout(width: 300, height: 300)) {
-    var conductor = TunerConductor(isMockingInput: true)
+    let conductor = TunerConductor(isMockingInput: true)
     conductor.start()
     return TunerMainView(tuner: conductor)
 }
