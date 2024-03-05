@@ -12,7 +12,7 @@ struct TunerSettingsView: View {
                 .font(.title)
                 .frame(maxWidth: .infinity)
             
-            Spacer()
+//            Spacer()
             
             HStack {
                 Button {
@@ -31,7 +31,7 @@ struct TunerSettingsView: View {
                 }
             }
             
-            Spacer()
+//            Spacer()
             
             HStack {
                 Button {
@@ -45,8 +45,21 @@ struct TunerSettingsView: View {
             }
             .padding(.bottom, 10)
             Slider(value: $tuner.amplitudeThreshold, in: 0.01...0.1)
-                
+            
             Spacer()
+                
+            Button {
+                do {
+                    try UIApplication.openSupportEmail()
+                } catch {
+                    tuner.Logger?.log("Open Support Email Error", additionalContext: nil)
+                }
+            } label: {
+                Text("Contact Developer")
+            }
+            .frame(maxWidth: .infinity)
+            
+//            Spacer()
         }
         .padding()
         .padding()
@@ -75,5 +88,30 @@ extension String {
     
     static var amplitudeThresholdInfo: String {
         "Minimum loudness for a reading to be considered. Every analysis window read to be below this value is considered silence and ignored."
+    }
+}
+
+extension UIApplication {
+    enum OpenURLError: Error {
+        case badEmailData, couldNotOpenURL
+    }
+    
+    static func openSupportEmail() throws {
+        let email = "SpatialTuner@gmail.com"
+        let subject = "Spatial Tuner Feedback"
+        let body = ""
+        
+        if let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+           let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+           let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)") {
+
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                throw OpenURLError.couldNotOpenURL
+            }
+        } else {
+            throw OpenURLError.badEmailData
+        }
     }
 }
