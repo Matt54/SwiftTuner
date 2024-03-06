@@ -81,8 +81,7 @@ struct TunerSettingsView: View {
     }
 }
 
-#Preview(windowStyle: .automatic,
-         traits: .fixedLayout(width: 300, height: 300)) {
+#Preview(traits: .fixedLayout(width: 300, height: 300)) {
     TunerSettingsView(tuner: TunerConductor())
 }
 

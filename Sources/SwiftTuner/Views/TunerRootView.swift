@@ -27,23 +27,8 @@ public struct TunerRootView: View {
             }
         }
         .ornament(attachmentAnchor: .scene(.topLeading), contentAlignment: .topTrailing) {
-            VStack {
-                Button("Mic", systemImage: isSettingsShowing ? "tuningfork" : "gearshape.fill") {
-                    isSettingsShowing.toggle()
-                }
-                .labelStyle(.iconOnly)
-                
-                Button("Mic", systemImage: !tuner.engineIsRunning ? "mic.fill" : "mic.slash") {
-                    if tuner.engineIsRunning {
-                        tuner.stop()
-                    } else {
-                        tuner.start()
-                    }
-                }
-                .disabled(isStartingUp || isSettingsShowing)
-                .labelStyle(.iconOnly)
-            }
-            .animation(.default, value: isSettingsShowing)
+            SettingsButton(isSettingsShowing: $isSettingsShowing)
+            MicButton(tuner: tuner, isDisabled: isStartingUp || isSettingsShowing)
         }
         .frame(minWidth: 300, maxWidth: 300, minHeight: 300, maxHeight: 300)
         .onAppear {
@@ -62,11 +47,39 @@ public struct TunerRootView: View {
             Text(tuner.errorMessage ?? "Something went wrong")
         }
     }
+    
+    struct SettingsButton: View {
+        @Binding var isSettingsShowing: Bool
+        
+        var body: some View {
+            Button("Settings", systemImage: isSettingsShowing ? "tuningfork" : "gearshape.fill") {
+                isSettingsShowing.toggle()
+            }
+            .labelStyle(.iconOnly)
+        }
+    }
+    
+    struct MicButton: View {
+        @State var tuner: TunerConductor
+        let isDisabled: Bool
+        
+        var body: some View {
+            Button("Mic", systemImage: !tuner.engineIsRunning ? "mic.fill" : "mic.slash") {
+                if tuner.engineIsRunning {
+                    tuner.stop()
+                } else {
+                    tuner.start()
+                }
+            }
+            .disabled(isDisabled)
+            .labelStyle(.iconOnly)
+        }
+    }
 }
 
-#Preview("Root", windowStyle: .automatic,
-         traits: .fixedLayout(width: 300, height: 300)) {
+#Preview("Root", traits: .fixedLayout(width: 300, height: 300)) {
     TunerRootView(tuner: TunerConductor(isMockingInput: true))
+        .preferredColorScheme(.dark)
 }
 
 // I don't want to show an error to the user if they happen to have an issue with the engine auto-starting on launch. They will just need to tap the mic manually to begin in that hopefully rare situation. In my testing, I don't get the issue anymore due to the delayed start.
