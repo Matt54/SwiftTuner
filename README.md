@@ -55,7 +55,7 @@ struct SpatialTunerApp: App {
 
 ## Credits
 
-SwiftTuner is developed and maintained by Matt Pfeiffer and owes much thanks to the AudioKit contributors.
+SwiftTuner is developed and maintained by Matt Pfeiffer and owes much thanks to the AudioKit community.
 
 ## License
 
@@ -63,4 +63,4 @@ SwiftTuner is released under the MIT License. See LICENSE for details.
 
 ## Contributing
 
-PRs are very welcome!
+You are welcome to contribute! Feel free to open an issue or pull request.
