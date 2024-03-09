@@ -8,6 +8,8 @@
 
 This open source Swift Package aims to create a great Tuner experience on visionOS. It uses the AudioKit library to provide real-time tuning information for pitch and deviation.
 
+[App Store Link](https://apps.apple.com/us/app/spatial-tuner-pitch-tuning/id6478814592)
+
 ## Features
 
 - **Real-time Tuning:** SwiftTuner provides real-time tuning information for pitch and deviation.
