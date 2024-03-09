@@ -32,6 +32,16 @@ You can use Swift Package Manager to install SwiftTuner in your project. Follow 
 3. Start the tuner: `tuner.start()`
 4. Use the tuning information provided by the `TunerConductor` instance to adjust your instrument.
 
+## Just Tuner Example
+
+```swift
+import SwiftTuner
+
+let tuner = TunerConductor()
+tuner.start()
+// Use tuner.data.pitch, tuner.data.noteName, tuner.data.octaveNumber, tuner.data.deviation as needed
+```
+
 ## Tuner View Example
 
 ``` swift
@@ -55,16 +65,6 @@ struct SpatialTunerApp: App {
     <img src="MediaFiles/JustTuner.gif" width="600">
 </kbd>
 </p>
-
-## Just Tuner Example
-
-```swift
-import SwiftTuner
-
-let tuner = TunerConductor()
-tuner.start()
-// Use tuner.data.pitch, tuner.data.noteName, tuner.data.octaveNumber, tuner.data.deviation as needed
-```
 
 ## Credits
 
