@@ -1,5 +1,11 @@
 # SwiftTuner
 
+<p align="center">
+<kbd>
+    <img src="MediaFiles/GuitarVideo.gif" width="600">
+</kbd>
+</p>
+
 This open source Swift Package aims to create a great Tuner experience on visionOS. It uses the AudioKit library to provide real-time tuning information for pitch and deviation.
 
 ## Features
@@ -26,16 +32,6 @@ You can use Swift Package Manager to install SwiftTuner in your project. Follow 
 3. Start the tuner: `tuner.start()`
 4. Use the tuning information provided by the `TunerConductor` instance to adjust your instrument.
 
-## Tuner Example
-
-```swift
-import SwiftTuner
-
-let tuner = TunerConductor()
-tuner.start()
-// Use tuner.data.pitch, tuner.data.noteName, tuner.data.octaveNumber, tuner.data.deviation as needed
-```
-
 ## Tuner View Example
 
 ``` swift
@@ -51,6 +47,23 @@ struct SpatialTunerApp: App {
         .windowResizability(.contentSize)
     }
 }
+```
+
+
+<p align="center">
+<kbd>
+    <img src="MediaFiles/JustTuner.gif" width="600">
+</kbd>
+</p>
+
+## Just Tuner Example
+
+```swift
+import SwiftTuner
+
+let tuner = TunerConductor()
+tuner.start()
+// Use tuner.data.pitch, tuner.data.noteName, tuner.data.octaveNumber, tuner.data.deviation as needed
 ```
 
 ## Credits
