@@ -77,7 +77,7 @@ public struct TunerRootView: View {
     }
 }
 
-#Preview("Root", traits: .fixedLayout(width: 300, height: 300)) {
+#Preview("Root", windowStyle: .automatic, traits: .fixedLayout(width: 300, height: 300)) {
     TunerRootView(tuner: TunerConductor(isMockingInput: true))
         .preferredColorScheme(.dark)
 }
