@@ -2,11 +2,15 @@ import SwiftUI
 
 public struct TunerRootView: View {
     @State var tuner: TunerConductor
+    var openMainMenuAction: (()->Void)?
+    
     @State var isStartingUp: Bool = true
     @State var isSettingsShowing: Bool = false
     
-    public init(tuner: TunerConductor = TunerConductor()) {
+    public init(tuner: TunerConductor = TunerConductor(), 
+                openMainMenuAction: (()->Void)? = nil) {
         self.tuner = tuner
+        self.openMainMenuAction = openMainMenuAction
     }
     
     public var body: some View {
@@ -21,7 +25,7 @@ public struct TunerRootView: View {
         
         Group {
             if isSettingsShowing {
-                TunerSettingsView(tuner: tuner)
+                TunerSettingsView(tuner: tuner, openMainMenuAction: openMainMenuAction)
             } else {
                 TunerMainView(tuner: tuner, isStartingUp: isStartingUp)
             }

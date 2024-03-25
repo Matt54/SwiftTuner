@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TunerSettingsView: View {
     @Bindable var tuner: TunerConductor
+    var openMainMenuAction: (()->Void)? = nil
     
     @State private var showingBufferSizeInfo: Bool = false
     @State private var showingAmplitudeThresholdInfo: Bool = false
@@ -11,8 +12,6 @@ struct TunerSettingsView: View {
             Text("Settings")
                 .font(.title)
                 .frame(maxWidth: .infinity)
-            
-//            Spacer()
             
             HStack {
                 Button {
@@ -30,8 +29,6 @@ struct TunerSettingsView: View {
                     }
                 }
             }
-            
-//            Spacer()
             
             HStack {
                 Button {
@@ -52,19 +49,17 @@ struct TunerSettingsView: View {
             }
             
             Spacer()
-                
-            Button {
-                do {
-                    try UIApplication.openSupportEmail()
-                } catch {
-                    tuner.Logger?.log("Open Support Email Error", additionalContext: nil)
-                }
-            } label: {
-                Text("Contact Developer")
-            }
-            .frame(maxWidth: .infinity)
             
-//            Spacer()
+            Button {
+                openMainMenuAction?()
+            } label: {
+                HStack {
+                    Image(systemName: "house")
+                    Text("Open Main Menu")
+                }
+            }
+            .disabled(openMainMenuAction == nil)
+            .frame(maxWidth: .infinity)
         }
         .padding()
         .padding()
@@ -92,30 +87,5 @@ extension String {
     
     static var amplitudeThresholdInfo: String {
         "Minimum loudness for a reading to be considered. Every buffer with an amplitude below this value is ignored."
-    }
-}
-
-extension UIApplication {
-    enum OpenURLError: Error {
-        case badEmailData, couldNotOpenURL
-    }
-    
-    static func openSupportEmail() throws {
-        let email = "SpatialTuner@gmail.com"
-        let subject = "Spatial Tuner Feedback"
-        let body = ""
-        
-        if let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-           let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-           let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)") {
-
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            } else {
-                throw OpenURLError.couldNotOpenURL
-            }
-        } else {
-            throw OpenURLError.badEmailData
-        }
     }
 }
