@@ -1,4 +1,4 @@
-# [SwiftTuner](https://apps.apple.com/us/app/spatial-tuner-pitch-tuning/id6478814592)
+# SwiftTuner - [App Store Link](https://apps.apple.com/us/app/spatial-tuner-pitch-tuning/id6478814592)
 
 <p align="center">
 <kbd>
