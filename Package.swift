@@ -17,7 +17,9 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SwiftTuner", dependencies: ["AudioKit", "AudioKitEX", "SoundpipeAudioKit"]),
+            name: "SwiftTuner",
+            dependencies: ["AudioKit", "AudioKitEX", "SoundpipeAudioKit"],
+            exclude: ["MediaFiles"]),
         .testTarget(
             name: "SwiftTunerTests",
             dependencies: ["SwiftTuner"]),
