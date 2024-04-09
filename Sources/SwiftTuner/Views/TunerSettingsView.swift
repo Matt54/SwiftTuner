@@ -6,6 +6,20 @@ struct TunerSettingsView: View {
     
     @State private var showingBufferSizeInfo: Bool = false
     @State private var showingAmplitudeThresholdInfo: Bool = false
+    
+    // user friendly value in 0-1 range (flips range so increasing provides more readings)
+    private var sensitivityBinding: Binding<Float> {
+        Binding(
+            get: {
+                // Map the amplitudeThreshold from 0.1...0.01 to 0...1
+                (0.1 - tuner.amplitudeThreshold) / 0.09
+            },
+            set: {
+                // Map the sensitivity from 1...0 back to 0.01...0.1
+                tuner.amplitudeThreshold = 0.1 - $0 * 0.09
+            }
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -38,11 +52,11 @@ struct TunerSettingsView: View {
                 }
                 .buttonStyle(.plain)
                 .buttonBorderShape(.circle)
-                Text("Amp. Threshold: \(tuner.amplitudeThreshold, specifier: "%0.3f")")
+                Text("Mic. Sensitivity: \(sensitivityBinding.wrappedValue, specifier: "%0.2f")")
             }
             .padding(.bottom, 10)
             
-            Slider(value: $tuner.amplitudeThreshold, in: 0.01...0.1) { isEditing in
+            Slider(value: sensitivityBinding, in: 0...1.0) { isEditing in
                 if !isEditing {
                     UserDefaultsManager.setAmplitudeThreshold(tuner.amplitudeThreshold)
                 }
@@ -68,7 +82,7 @@ struct TunerSettingsView: View {
         } message: {
             Text(String.bufferSizeInfo)
         }
-        .alert("Amplitude Threshold (dB.)", isPresented: $showingAmplitudeThresholdInfo) {
+        .alert("Microphone Sensitivity", isPresented: $showingAmplitudeThresholdInfo) {
             Button("OK", action: {})
         } message: {
             Text(String.amplitudeThresholdInfo)
@@ -82,10 +96,10 @@ struct TunerSettingsView: View {
 
 extension String {
     static var bufferSizeInfo: String {
-        "The number of samples which will be analyzed for each update. This influences how often the pitch is read."
+        "Decrease for faster updates. Increase for better accuracy."
     }
     
     static var amplitudeThresholdInfo: String {
-        "Minimum loudness for a reading to be considered. Every buffer with an amplitude below this value is ignored."
+        "Decrease to filter out ambient sound. Increase if it's dropping readings from your instrument."
     }
 }
