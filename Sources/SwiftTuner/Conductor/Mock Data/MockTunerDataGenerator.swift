@@ -18,7 +18,8 @@ class MockTunerDataGenerator {
             }
 
             // Call the update closure with the simulated pitch and a constant amplitude
-            self.onUpdate?(self.currentPitch, 0.5)
+            let randomAmplitude = Float.random(in: 0.01...0.1)
+            self.onUpdate?(self.currentPitch, randomAmplitude)
         }
     }
 
