@@ -9,10 +9,12 @@ import Foundation
 
 class UserDefaultsManager {
     static let defaultAmplitudeThreshold: Float = 0.025
+    static let defaultTransposition: Int = Transposition.C.rawValue
     
     enum UserDefaultKey: String {
         case bufferSize = "kBufferSize"
         case amplitudeThreshold = "kAmplitudeThreshold"
+        case transposition = "kTransposition"
     }
     
     static func getBufferSize() -> BufferSize {
@@ -44,5 +46,15 @@ class UserDefaultsManager {
     
     static func setAmplitudeThreshold(_ value: Float) {
         UserDefaults.standard.set(value, forKey: UserDefaultKey.amplitudeThreshold.rawValue)
+    }
+
+    static func getTransposition() -> Transposition {
+        let key = UserDefaultKey.transposition.rawValue
+        let value = UserDefaults.standard.integer(forKey: key)
+        return Transposition(rawValue: value) ?? .C
+    }
+
+    static func setTransposition(_ transposition: Transposition) {
+        UserDefaults.standard.set(transposition.rawValue, forKey: UserDefaultKey.transposition.rawValue)
     }
 }

@@ -9,6 +9,13 @@ import SwiftUI
 public class TunerConductor {
     public var data = TunerData()
     public var amplitudeThreshold: Float = UserDefaultsManager.getAmplitudeThreshold()
+    
+    public var transposition: Transposition = UserDefaultsManager.getTransposition() {
+        didSet {
+            UserDefaultsManager.setTransposition(transposition)
+        }
+    }
+    
     public var engineIsRunning: Bool = false
     public var errorMessage: String? = nil
 
@@ -165,6 +172,16 @@ extension TunerConductor {
             }
             targetFrequency = noteFrequencies[index] * pow(2.0, Double(Float(octave)))
             deviation = 1200 * log2(pitch / Float(targetFrequency))
+        }
+        
+        // Adjust the note index and octave based on the transposition
+        index += transposition.rawValue
+        if index > noteNames.count-1 {
+            index = index % noteNames.count
+            octave += 1
+        } else if index < 0 {
+            index += 12
+            octave -= 1
         }
 
         DispatchQueue.main.async {
