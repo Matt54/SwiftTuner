@@ -9,5 +9,6 @@ enum TunerEvent: String {
          audioSessionSetActiveFailed = "Audio Session Set Active Failed",
          audioEngineInputNodeMissing = "Audio Engine Input Node Missing",
          bufferSizeUpdated = "Buffer Size Updated",
-         audioEngineStartError = "Audio Engine Error"
+         audioEngineStartError = "Audio Engine Error",
+         transpositionUpdated = "Transposition Updated"
 }

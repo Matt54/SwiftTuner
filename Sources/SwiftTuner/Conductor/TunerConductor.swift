@@ -12,6 +12,7 @@ public class TunerConductor {
     
     public var transposition: Transposition = UserDefaultsManager.getTransposition() {
         didSet {
+            Logger?.log(TunerEvent.transpositionUpdated.rawValue, additionalContext: ["transposition": transposition.displayName])
             UserDefaultsManager.setTransposition(transposition)
         }
     }
