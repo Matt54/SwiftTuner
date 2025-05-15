@@ -84,7 +84,7 @@ public struct TunerRootView: View {
 
 // I don't want to show an error to the user if they happen to have an issue with the engine auto-starting on launch. They will just need to tap the mic manually to begin in that hopefully rare situation. In my testing, I don't get the issue anymore due to the delayed start.
 #if DEBUG
-let DISPLAY_INITIAL_AUDIO_ENGINE_ERROR = true
+public let DISPLAY_INITIAL_AUDIO_ENGINE_ERROR = true
 #else
-let DISPLAY_INITIAL_AUDIO_ENGINE_ERROR = false
+public let DISPLAY_INITIAL_AUDIO_ENGINE_ERROR = true
 #endif

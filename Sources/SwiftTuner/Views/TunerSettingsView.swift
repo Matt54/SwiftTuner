@@ -1,7 +1,11 @@
 import SwiftUI
 
-struct TunerSettingsView: View {
+public struct TunerSettingsView: View {
     @Bindable var tuner: TunerConductor
+    
+    public init(tuner: TunerConductor) {
+        self.tuner = tuner
+    }
     
     @State private var showingBufferSizeInfo: Bool = false
     @State private var showingAmplitudeThresholdInfo: Bool = false
@@ -20,8 +24,13 @@ struct TunerSettingsView: View {
             }
         )
     }
+    
+    var infoCircle: some View {
+        Image(systemName: "info.circle")
+            .foregroundStyle(.secondary)
+    }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             Text("Tuner Settings")
                 .font(.title3)
@@ -31,12 +40,20 @@ struct TunerSettingsView: View {
                 Button {
                     showingTranspositionInfo = true
                 } label: {
-                    Image(systemName: "info.circle")
+                    infoCircle
                 }
                 .buttonStyle(.plain)
                 .buttonBorderShape(.circle)
+                .popover(
+                    isPresented: $showingTranspositionInfo, arrowEdge: .bottom
+                ) {
+                    Text(String.transpositionInfo)
+                        .frame(width: 300)
+                        .padding()
+                }
                 
                 Text("Transposition:")
+                Spacer(minLength: 0)
                 Picker("Transposition", selection: $tuner.transposition) {
                     ForEach(Transposition.allCases, id: \.self) { transposition in
                         Text("\(transposition.displayName)").tag(transposition)
@@ -48,12 +65,20 @@ struct TunerSettingsView: View {
                 Button {
                     showingBufferSizeInfo = true
                 } label: {
-                    Image(systemName: "info.circle")
+                    infoCircle
                 }
                 .buttonStyle(.plain)
                 .buttonBorderShape(.circle)
+                .popover(
+                    isPresented: $showingBufferSizeInfo, arrowEdge: .bottom
+                ) {
+                    Text(String.bufferSizeInfo)
+                        .frame(width: 300)
+                        .padding()
+                }
                 
                 Text("Buffer Size:")
+                Spacer(minLength: 0)
                 Picker("Buffer Size", selection: $tuner.bufferSize) {
                     ForEach(BufferSize.allCases, id: \.id) { bufferSize in
                         Text("\(bufferSize.rawValue)").tag(bufferSize)
@@ -62,40 +87,35 @@ struct TunerSettingsView: View {
             }
             .padding(.bottom, 10)
             
-            HStack {
+            ZStack(alignment: .topLeading) {
                 Button {
                     showingAmplitudeThresholdInfo = true
                 } label: {
-                    Image(systemName: "info.circle")
+                    infoCircle
                 }
                 .buttonStyle(.plain)
                 .buttonBorderShape(.circle)
-                Text("Mic. Sensitivity: \(sensitivityBinding.wrappedValue, specifier: "%0.2f")")
-            }
-            
-            Slider(value: sensitivityBinding, in: 0...1.0) { isEditing in
-                if !isEditing {
-                    UserDefaultsManager.setAmplitudeThreshold(tuner.amplitudeThreshold)
+                .popover(
+                    isPresented: $showingAmplitudeThresholdInfo, arrowEdge: .bottom
+                ) {
+                    Text(String.amplitudeThresholdInfo)
+                        .frame(width: 300)
+                        .padding()
+                }
+                
+                VStack(spacing: 18) {
+                    Text("Mic. Sensitivity: \(sensitivityBinding.wrappedValue, specifier: "%0.2f")")
+                    Slider(value: sensitivityBinding, in: 0...1.0) { isEditing in
+                        if !isEditing {
+                            UserDefaultsManager.setAmplitudeThreshold(tuner.amplitudeThreshold)
+                        }
+                    }
                 }
             }
+            Spacer(minLength: 0)
         }
         .padding()
-        .padding(.horizontal)
-        .alert("Buffer Size (samples)", isPresented: $showingBufferSizeInfo) {
-            Button("OK", action: {})
-        } message: {
-            Text(String.bufferSizeInfo)
-        }
-        .alert("Microphone Sensitivity", isPresented: $showingAmplitudeThresholdInfo) {
-            Button("OK", action: {})
-        } message: {
-            Text(String.amplitudeThresholdInfo)
-        }
-        .alert("Transposing Instrument", isPresented: $showingTranspositionInfo) {
-            Button("OK", action: {})
-        } message: {
-            Text(String.transpositionInfo)
-        }
+        .padding()
     }
 }
 

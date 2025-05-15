@@ -28,21 +28,21 @@ public struct TunerMainView: View {
                                 Spacer()
                                 Text("\(octave)")
                                     .font(.body)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                         .offset(x: 18, y: 24)
                     )
             } else {
-                if isStartingUp {
-                    ProgressView()
-                } else {
-                    Text("Tap Mic to start")
-                }
+                Button(action: {
+                    tuner.start()
+                }, label: {
+                    Text("Reset Engine")
+                })
             }
             
             TunerMetricsViewHeader(pitch: tuner.data.pitch,
                                    deviation: tuner.data.deviation)
-            .padding()
             
             DeviationIndicator(deviation: tuner.data.deviation, bufferSize: tuner.bufferSize)
             
@@ -105,20 +105,17 @@ public struct TunerMainView: View {
         var body: some View {
             VStack {
                 Spacer()
-                ZStack {
-                    HStack {
-                        Text("\(pitch, specifier: "%0.1f") Hz.")
-                            .font(.body)
-                        Spacer()
-                    }
-                    HStack {
-                        Spacer()
-                        Text("\(deviation, specifier: "%+0.1f") cents.")
-                            .font(.body)
-                    }
+                
+                VStack {
+                    Text("\(deviation, specifier: "%+0.1f") cents.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                    Text("\(pitch, specifier: "%0.1f") Hz.")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
             }
-            .foregroundStyle(.secondary)
+            .padding(.bottom, 6)
         }
     }
     
@@ -145,7 +142,7 @@ public struct TunerMainView: View {
         var body: some View {
             Text(label)
                 .foregroundStyle(isHighlighted ? .secondary : .tertiary)
-                .font(Font.system(size: isHighlighted ? 32 : 28))
+                .font(Font.system(size: 28))
                 .frame(width: 20, height: 40)
                 .animation(.easeInOut(duration: 0.1), value: isHighlighted)
         }
