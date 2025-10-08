@@ -59,6 +59,7 @@ public struct TunerSettingsView: View {
                         Text("\(transposition.displayName)").tag(transposition)
                     }
                 }
+                .frame(width: 105)
             }
             
             HStack {
@@ -84,6 +85,7 @@ public struct TunerSettingsView: View {
                         Text("\(bufferSize.rawValue)").tag(bufferSize)
                     }
                 }
+                .frame(width: 105)
             }
             .padding(.bottom, 10)
             
