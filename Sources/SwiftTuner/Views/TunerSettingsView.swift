@@ -59,7 +59,7 @@ public struct TunerSettingsView: View {
                         Text("\(transposition.displayName)").tag(transposition)
                     }
                 }
-                .frame(width: 105)
+                .frame(width: 85)
             }
             
             HStack {
@@ -123,6 +123,7 @@ public struct TunerSettingsView: View {
 
 #Preview(windowStyle: .automatic, traits: .fixedLayout(width: 300, height: 300)) {
     TunerSettingsView(tuner: TunerConductor())
+        .frame(width: 300)
 }
 
 extension String {
